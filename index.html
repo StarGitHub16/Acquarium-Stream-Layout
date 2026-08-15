@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Gelid Genteel — Arctic Undersea Overlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <svg style="position: absolute; width: 0; height: 0;">
+      <defs>
+        <filter id="iceCrystal">
+          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <filter id="frostGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+  </head>
+  <body>
+    <main class="overlay" aria-label="The GelidGenteel arctic undersea Twitch overlay">
+      <div class="ambient-glow glow-a"></div>
+      <div class="ambient-glow glow-b"></div>
+      <div class="starfield" aria-hidden="true"></div>
+      <div class="bioluminescent-glow bio-1"></div>
+      <div class="bioluminescent-glow bio-2"></div>
+      <div class="bioluminescent-glow bio-3"></div>
+      
+      <!-- Steam/mist effects for thawing states -->
+      <div class="steam-mist steam-1" aria-hidden="true"></div>
+      <div class="steam-mist steam-2" aria-hidden="true"></div>
+      <div class="steam-mist steam-3" aria-hidden="true"></div>
+      
+      <!-- Coral formations -->
+      <div class="coral coral-1" aria-hidden="true"></div>
+      <div class="coral coral-2" aria-hidden="true"></div>
+      <div class="coral coral-3" aria-hidden="true"></div>
+      <div class="coral coral-4" aria-hidden="true"></div>
+      
+      <!-- Seaweed/algae on sides -->
+      <div class="seaweed seaweed-left-1" aria-hidden="true"></div>
+      <div class="seaweed seaweed-left-2" aria-hidden="true"></div>
+      <div class="seaweed seaweed-left-3" aria-hidden="true"></div>
+      <div class="seaweed seaweed-right-1" aria-hidden="true"></div>
+      <div class="seaweed seaweed-right-2" aria-hidden="true"></div>
+      <div class="seaweed seaweed-right-3" aria-hidden="true"></div>
+      
+      <!-- Swimming fish container -->
+      <div class="fish-container" aria-hidden="true"></div>
+      
+      <!-- Floating octopus on borders -->
+      <div class="octopus octopus-left" aria-hidden="true">
+        <div class="octopus-head"></div>
+        <div class="tentacle tentacle-1"></div>
+        <div class="tentacle tentacle-2"></div>
+        <div class="tentacle tentacle-3"></div>
+        <div class="tentacle tentacle-4"></div>
+        <div class="eye eye-left"></div>
+        <div class="eye eye-right"></div>
+      </div>
+      
+      <div class="octopus octopus-right" aria-hidden="true">
+        <div class="octopus-head"></div>
+        <div class="tentacle tentacle-1"></div>
+        <div class="tentacle tentacle-2"></div>
+        <div class="tentacle tentacle-3"></div>
+        <div class="tentacle tentacle-4"></div>
+        <div class="eye eye-left"></div>
+        <div class="eye eye-right"></div>
+      </div>
+
+      <section class="gameplay-frame" aria-label="Gameplay safe area">
+        <div class="ice-edge edge-top"></div>
+        <div class="ice-edge edge-right"></div>
+        <div class="ice-edge edge-bottom"></div>
+        <div class="ice-edge edge-left"></div>
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-br"></div>
+        <div class="corner corner-bl"></div>
+        <div class="inner-rim"></div>
+        
+        <!-- Center screen state messages -->
+        <div class="center-message brb-message" aria-hidden="true">
+          <div class="ice-block">
+            <div class="frost-icon">❄️</div>
+            <h2>FROZEN</h2>
+            <p>TEMPORARILY FROZEN</p>
+            <div class="crystal-decoration"></div>
+          </div>
+        </div>
+        
+        <div class="center-message starting-message" aria-hidden="true">
+          <div class="thaw-block">
+            <div class="steam-icon">💨</div>
+            <h2>THAWING</h2>
+            <p>THE AQUARIUM OPENS SOON</p>
+            <div class="bubble-decoration"></div>
+          </div>
+        </div>
+        
+        <div class="center-message offline-message" aria-hidden="true">
+          <div class="frigid-block">
+            <div class="iceberg-icon">🏔️</div>
+            <h2>COMPLETELY FROZEN</h2>
+            <p>STREAM OFFLINE</p>
+            <div class="glacier-decoration"></div>
+          </div>
+        </div>
+      </section>
+
+      <header class="identity-plaque">
+        <div class="crest" aria-hidden="true"><span>🧊</span></div>
+        <div>
+          <p class="eyebrow ice-font"></p>
+          <h1>THEGELIDGENTEEL</h1>
+          <p class="subtitle ice-font" id="current-game">Current Playing</p>
+        </div>
+        <div class="frost-crystal" style="top: 10px; right: 15px;"></div>
+        <div class="frost-crystal" style="bottom: 8px; left: 12px; animation-delay: 1s;"></div>
+        <div class="frost-crystal" style="top: 50%; right: 8px; animation-delay: 2s;"></div>
+      </header>
+
+      <aside class="vtuber-frame" aria-label="VTuber avatar safe area">
+        <!-- <div class="frame-label">KNIGHT’S CHAMBER</div>
+        <div class="avatar-safe"><span>VTUBER<br />SAFE AREA</span></div>
+        <div class="rune rune-one">✧</div>
+        <div class="rune rune-two">✦</div>
+        <div class="frost-crystal" style="top: 12px; right: 12px;"></div>
+        <div class="frost-crystal" style="bottom: 12px; left: 12px; animation-delay: 1.5s;"></div> -->
+        
+        <!-- Chat overlay above VTuber area -->
+        <div class="chat-tank" aria-label="Chat overlay">
+          <div class="tank-glass"></div>
+          <div class="tank-water"></div>
+          <div class="tank-bubbles"></div>
+          <div class="chat-content">
+            <div class="chat-messages">
+              <div class="chat-message">
+                <span class="chat-user">User1:</span>
+                <span class="chat-text">Love the ice theme!</span>
+              </div>
+              <div class="chat-message">
+                <span class="chat-user">User2:</span>
+                <span class="chat-text">The bubbles are amazing</span>
+              </div>
+              <div class="chat-message">
+                <span class="chat-user">Mod:</span>
+                <span class="chat-text">Stream quality is perfect</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="status-plate">
+        <span class="status-dot"></span>
+        <span id="statusText" class="ice-font">LIVE FROM THE TANK</span>
+      </div>
+
+      <div class="social-plate">
+        <span class="social-icon">◈</span>
+        <span class="ice-font">twitch.tv/thegelidgenteel</span>
+      </div>
+
+
+      <div class="shard shard-a" aria-hidden="true"></div>
+      <div class="shard shard-b" aria-hidden="true"></div>
+      <div class="shard shard-c" aria-hidden="true"></div>
+      <div class="ice-formation ice-top-left"></div>
+      <div class="ice-formation ice-top-right"></div>
+      <div class="ice-formation ice-bottom-left"></div>
+      <div class="ice-formation ice-bottom-right"></div>
+      
+      <!-- Glacier formations for frozen state -->
+      <div class="glacier glacier-main" aria-hidden="true"></div>
+      <div class="glacier glacier-secondary" aria-hidden="true"></div>
+      <div class="ice-crack crack-1" aria-hidden="true"></div>
+      <div class="ice-crack crack-2" aria-hidden="true"></div>
+      <div class="ice-crack crack-3" aria-hidden="true"></div>
+      <div class="frost-overlay" aria-hidden="true"></div>
+
+      <nav class="demo-controls" aria-label="Overlay preview controls">
+        <button data-status="LIVE FROM THE TANK">Live</button>
+        <button data-status="THE AQUARIUM OPENS SOON">Starting Soon</button>
+        <button data-status="TEMPORARILY FROZEN">BRB</button>
+        <button data-status="STREAM COMPLETELY FROZEN">Offline</button>
+        <button id="toggleMotion">Motion</button>
+        <button id="toggleFreeze">Freeze</button>
+      </nav>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
