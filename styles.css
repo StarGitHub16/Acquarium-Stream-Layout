@@ -245,7 +245,7 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   transform: rotate(22deg);
 }
 
-.eye {
+.octopus-eye {
   position: absolute;
   width: 10px;
   height: 10px;
@@ -254,17 +254,17 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
-.eye-left {
+.octopus-eye-left {
   top: 12px;
   left: 18px;
 }
 
-.eye-right {
+.octopus-eye-right {
   top: 12px;
   left: 32px;
 }
 
-.eye::after {
+.octopus-eye::after {
   content: '';
   position: absolute;
   width: 5px;
@@ -281,6 +281,140 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   50% { transform: translateY(-30px); }
 }
 
+/* Crabs on borders - floating */
+.crab {
+  position: absolute;
+  width: 55px;
+  height: 45px;
+  z-index: 8;
+  opacity: 0.75;
+  transition: opacity 2s ease-in-out;
+  pointer-events: none;
+  animation: crabFloat 5s ease-in-out infinite;
+}
+
+.crab-bottom-left {
+  left: 10px;
+  bottom: 20%;
+  animation-delay: 0s;
+}
+
+.crab-top-right {
+  right: 10px;
+  top: 20%;
+  animation-delay: 2.5s;
+}
+
+.crab-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 35px;
+  height: 28px;
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.85), rgba(198, 40, 40, 0.9));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 25px rgba(244, 67, 54, 0.6), 0 0 50px rgba(198, 40, 40, 0.4);
+}
+
+.claw {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.8), rgba(198, 40, 40, 0.7));
+  border-radius: 40% 40% 50% 50%;
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+}
+
+.claw-left {
+  top: 8px;
+  left: 2px;
+  width: 15px;
+  height: 12px;
+  transform: rotate(-30deg);
+}
+
+.claw-right {
+  top: 8px;
+  right: 2px;
+  width: 15px;
+  height: 12px;
+  transform: rotate(30deg);
+}
+
+.leg {
+  position: absolute;
+  background: linear-gradient(180deg, rgba(244, 67, 54, 0.8), rgba(198, 40, 40, 0.7));
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
+}
+
+.leg-1 {
+  bottom: 5px;
+  left: 8px;
+  width: 4px;
+  height: 18px;
+  transform: rotate(-45deg);
+}
+
+.leg-2 {
+  bottom: 8px;
+  left: 16px;
+  width: 4px;
+  height: 16px;
+  transform: rotate(-15deg);
+}
+
+.leg-3 {
+  bottom: 8px;
+  right: 16px;
+  width: 4px;
+  height: 16px;
+  transform: rotate(15deg);
+}
+
+.leg-4 {
+  bottom: 5px;
+  right: 8px;
+  width: 4px;
+  height: 18px;
+  transform: rotate(45deg);
+}
+
+.crab-eye {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.crab-eye-left {
+  top: 15px;
+  left: 14px;
+}
+
+.crab-eye-right {
+  top: 15px;
+  right: 14px;
+}
+
+.crab-eye::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes crabFloat {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-25px) rotate(5deg); }
+}
+
 @keyframes octopusFloatFlipped {
   0%, 100% { transform: scaleX(-1) translateY(0); }
   50% { transform: scaleX(-1) translateY(-30px); }
@@ -289,7 +423,8 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
 /* Hide coral and seaweed when frozen */
 .overlay.frozen .coral, .overlay.frigid .coral,
 .overlay.frozen .seaweed, .overlay.frigid .seaweed,
-.overlay.frozen .octopus, .overlay.frigid .octopus {
+.overlay.frozen .octopus, .overlay.frigid .octopus,
+.overlay.frozen .crab, .overlay.frigid .crab {
   opacity: 0;
 }
 
