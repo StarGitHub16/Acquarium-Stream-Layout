@@ -25,19 +25,19 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   align-items: center;
   gap: 13px;
   padding: 12px 20px 12px 11px;
-  border: 1px solid rgba(0, 229, 255, .47);
+  border: 1px solid rgba(0, 229, 255, .7);
   border-left: 0;
-  background: linear-gradient(90deg, rgba(10, 25, 47, .94), rgba(13, 71, 161, .72), transparent);
+  background: linear-gradient(90deg, rgba(10, 25, 47, .95), rgba(13, 71, 161, .88), rgba(13, 71, 161, .75));
   clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
-  box-shadow: 0 0 22px rgba(0, 229, 255, .2);
+  box-shadow: 0 0 22px rgba(0, 229, 255, .3);
   transition: background 2s ease-in-out, border-color 2s ease-in-out, box-shadow 2s ease-in-out;
 }
 
 /* Frozen state styling */
 .identity-plaque.frozen {
-  border-color: rgba(66, 165, 245, .47);
-  background: linear-gradient(90deg, rgba(13, 71, 161, .94), rgba(21, 101, 192, .72), transparent);
-  box-shadow: 0 0 22px rgba(66, 165, 245, .2);
+  border-color: rgba(66, 165, 245, .7);
+  background: linear-gradient(90deg, rgba(13, 71, 161, .95), rgba(21, 101, 192, .88), rgba(21, 101, 192, .75));
+  box-shadow: 0 0 22px rgba(66, 165, 245, .3);
 }
 
 .crest {
@@ -59,7 +59,7 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
 
 .eyebrow {
   margin: 0 0 2px;
-  color: var(--bioluminescent);
+  color: rgba(0, 229, 255, .9);
   font-size: 9px;
   letter-spacing: .24em;
   font-weight: 700;
@@ -70,7 +70,7 @@ h1 {
   color: #e0f7fa;
   font: 600 clamp(15px, 1.4vw, 25px) Cinzel, serif;
   letter-spacing: .08em;
-  text-shadow: 0 0 12px rgba(0, 229, 255, .6);
+  text-shadow: 0 0 15px rgba(0, 229, 255, .8), 0 0 30px rgba(0, 229, 255, .4);
   filter: url(#iceCrystal);
 }
 
@@ -78,12 +78,12 @@ h1 {
 .ice-font {
   filter: url(#iceCrystal);
   color: #e8f8ff;
-  text-shadow: 0 0 2px rgba(200, 240, 255, 0.5);
+  text-shadow: 0 0 4px rgba(200, 240, 255, 0.7), 0 0 8px rgba(0, 229, 255, 0.5);
 }
 
 .subtitle {
   margin: 2px 0 0;
-  color: rgba(0, 229, 255, .67);
+  color: rgba(0, 229, 255, .85);
   font-size: 10px;
   letter-spacing: .08em;
 }
@@ -104,4 +104,27 @@ h1 {
 @keyframes crystalFloat {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
   50% { transform: translateY(-3px) scale(1.1); opacity: 1; }
+}
+
+/* Edit indicator - shows on mouse movement */
+.edit-indicator {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(0, 229, 255, 0.7);
+  background: rgba(10, 25, 47, 0.9);
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.edit-indicator.visible {
+  opacity: 1;
 }

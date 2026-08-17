@@ -646,26 +646,26 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
 .corner-br { right: -4px; bottom: -4px; transform: scale(-1); border-right: 0; border-bottom: 0; clip-path: polygon(0 0, 100% 0, 38% 38%, 0 100%); }
 .corner-bl { left: -4px; bottom: -4px; transform: scaleY(-1); border-right: 0; border-bottom: 0; clip-path: polygon(0 0, 100% 0, 38% 38%, 0 100%); }
 
-.identity-plaque { position: absolute; left: 6.3%; top: 7.8%; z-index: 5; display: flex; align-items: center; gap: 13px; padding: 12px 20px 12px 11px; border: 1px solid rgba(0, 229, 255, .47); border-left: 0; background: linear-gradient(90deg, rgba(10, 25, 47, .94), rgba(13, 71, 161, .72), transparent); clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%); box-shadow: 0 0 22px rgba(0, 229, 255, .2); transition: background 2s ease-in-out, border-color 2s ease-in-out, box-shadow 2s ease-in-out; }
+.identity-plaque { position: absolute; left: 6.3%; top: 7.8%; z-index: 5; display: flex; align-items: center; gap: 13px; padding: 12px 20px 12px 11px; border: 1px solid rgba(0, 229, 255, .7); border-left: 0; background: linear-gradient(90deg, rgba(10, 25, 47, .95), rgba(13, 71, 161, .88), rgba(13, 71, 161, .75)); clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%); box-shadow: 0 0 22px rgba(0, 229, 255, .3); transition: background 2s ease-in-out, border-color 2s ease-in-out, box-shadow 2s ease-in-out; }
 
 .overlay.frozen .identity-plaque {
-  border-color: rgba(66, 165, 245, .47);
-  background: linear-gradient(90deg, rgba(13, 71, 161, .94), rgba(21, 101, 192, .72), transparent);
-  box-shadow: 0 0 22px rgba(66, 165, 245, .2);
+  border-color: rgba(66, 165, 245, .7);
+  background: linear-gradient(90deg, rgba(13, 71, 161, .95), rgba(21, 101, 192, .88), rgba(21, 101, 192, .75));
+  box-shadow: 0 0 22px rgba(66, 165, 245, .3);
 }
 .crest { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--bioluminescent); color: var(--ice); transform: rotate(45deg); background: linear-gradient(145deg, rgba(0, 229, 255, .23), rgba(0, 105, 92, .06)); box-shadow: 0 0 16px rgba(0, 229, 255, .42), inset 0 0 12px rgba(224, 247, 250, .26); }
 .crest span { transform: rotate(-45deg); font-size: 19px; }
-.eyebrow { margin: 0 0 2px; color: var(--bioluminescent); font-size: 9px; letter-spacing: .24em; font-weight: 700; }
-h1 { margin: 0; color: #e0f7fa; font: 600 clamp(15px, 1.4vw, 25px) Cinzel, serif; letter-spacing: .08em; text-shadow: 0 0 12px rgba(0, 229, 255, .6); filter: url(#iceCrystal); }
+.eyebrow { margin: 0 0 2px; color: rgba(0, 229, 255, .9); font-size: 9px; letter-spacing: .24em; font-weight: 700; }
+h1 { margin: 0; color: #e0f7fa; font: 600 clamp(15px, 1.4vw, 25px) Cinzel, serif; letter-spacing: .08em; text-shadow: 0 0 15px rgba(0, 229, 255, .8), 0 0 30px rgba(0, 229, 255, .4); filter: url(#iceCrystal); }
 
 /* Ice crystal font effect */
 .ice-font {
   filter: url(#iceCrystal);
   color: #e8f8ff;
-  text-shadow: 0 0 2px rgba(200, 240, 255, 0.5);
+  text-shadow: 0 0 4px rgba(200, 240, 255, 0.7), 0 0 8px rgba(0, 229, 255, 0.5);
 }
 
-.subtitle { margin: 2px 0 0; color: rgba(0, 229, 255, .67); font-size: 10px; letter-spacing: .08em; }
+.subtitle { margin: 2px 0 0; color: rgba(0, 229, 255, .85); font-size: 10px; letter-spacing: .08em; }
 
 /* Frost crystal decorations */
 .frost-crystal {
