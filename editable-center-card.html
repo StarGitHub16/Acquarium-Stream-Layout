@@ -12,11 +12,25 @@
       * { box-sizing: border-box; }
       html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }
       .stage { position: relative; width: 100vw; height: 100vh; display: grid; place-items: center; pointer-events: none; }
-      .center-card { position: relative; width: min(62vw, 980px); min-width: 360px; padding: clamp(28px, 3vw, 56px) clamp(38px, 5vw, 92px); overflow: hidden; text-align: center; border: 2px solid rgba(66, 165, 245, .62); border-radius: 22px; background: linear-gradient(145deg, rgba(13, 71, 161, .91), rgba(21, 101, 192, .82)); box-shadow: 0 0 42px rgba(66, 165, 245, .42), inset 0 0 32px rgba(66, 165, 245, .22); pointer-events: auto; }
-      .center-card::before, .center-card::after { content: ''; position: absolute; width: 11px; height: 11px; background: rgba(224, 247, 250, .66); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); animation: sparkle 4s ease-in-out infinite; }
-      .center-card::before { top: 20%; left: 14%; }
-      .center-card::after { right: 17%; bottom: 23%; animation-delay: 1.8s; }
-      .card-icon { display: block; margin-bottom: 15px; font-size: clamp(34px, 3vw, 56px); filter: drop-shadow(0 0 16px rgba(224, 247, 250, .8)); }
+      .center-card { --card-top: rgba(13, 71, 161, .91); --card-bottom: rgba(21, 101, 192, .82); --card-border: rgba(66, 165, 245, .62); --card-glow: rgba(66, 165, 245, .42); position: relative; width: min(62vw, 980px); min-width: 360px; padding: clamp(28px, 3vw, 56px) clamp(38px, 5vw, 92px); overflow: hidden; text-align: center; border: 2px solid var(--card-border); border-radius: 22px; background: linear-gradient(145deg, var(--card-top), var(--card-bottom)); box-shadow: 0 0 42px var(--card-glow), inset 0 0 32px var(--card-glow); pointer-events: auto; transition: background .24s ease, border-color .24s ease, box-shadow .24s ease; }
+      .center-card[data-theme="lagoon"] { --card-top: rgba(0, 121, 140, .92); --card-bottom: rgba(0, 84, 96, .86); --card-border: rgba(103, 255, 241, .68); --card-glow: rgba(50, 244, 224, .32); }
+      .center-card[data-theme="midnight"] { --card-top: rgba(5, 28, 77, .94); --card-bottom: rgba(12, 74, 122, .86); --card-border: rgba(123, 192, 255, .62); --card-glow: rgba(45, 141, 255, .32); }
+      .center-card[data-theme="glacier"] { --card-top: rgba(115, 196, 237, .92); --card-bottom: rgba(45, 123, 181, .86); --card-border: rgba(231, 254, 255, .85); --card-glow: rgba(179, 245, 255, .38); }
+      .center-card[data-theme="kelp"] { --card-top: rgba(9, 105, 96, .93); --card-bottom: rgba(6, 62, 78, .87); --card-border: rgba(125, 255, 216, .64); --card-glow: rgba(72, 235, 180, .28); }
+      .center-card[data-theme="frost"] { --card-top: rgba(197, 239, 252, .94); --card-bottom: rgba(75, 157, 204, .88); --card-border: rgba(245, 254, 255, .9); --card-glow: rgba(186, 239, 255, .44); }
+      .card-icon { display: block; margin: 0 auto 15px; padding: 0; border: 0; background: transparent; color: inherit; font-size: clamp(34px, 3vw, 56px); filter: drop-shadow(0 0 16px rgba(224, 247, 250, .8)); cursor: pointer; }
+      .card-icon:hover, .card-icon:focus { transform: scale(1.08); outline: none; }
+      .icon-picker { position: absolute; z-index: 4; left: 50%; top: 58px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: min(88%, 300px); padding: 8px; transform: translateX(-50%) translateY(-8px); border: 1px solid rgba(224, 247, 250, .55); border-radius: 14px; background: rgba(5, 38, 88, .96); box-shadow: 0 14px 30px rgba(0, 0, 0, .28); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
+      .icon-picker.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+      .icon-option { min-height: 42px; border: 1px solid rgba(224, 247, 250, .2); border-radius: 9px; background: rgba(224, 247, 250, .06); color: #e0f7fa; font-size: 21px; cursor: pointer; }
+      .icon-option:hover, .icon-option.selected { border-color: rgba(224, 247, 250, .82); background: rgba(93, 229, 252, .2); }
+      .theme-button { position: absolute; left: 14px; top: 12px; width: 26px; height: 26px; padding: 0; border: 1px solid rgba(224, 247, 250, .48); border-radius: 50%; background: linear-gradient(135deg, #69e5ff 0 33%, #5fe0c8 33% 66%, #8ba6ff 66%); cursor: pointer; }
+      .theme-button:hover, .theme-button:focus { box-shadow: 0 0 14px rgba(224, 247, 250, .7); outline: none; }
+      .theme-picker { position: absolute; z-index: 4; left: 13px; top: 48px; display: grid; gap: 7px; padding: 8px; transform: translateY(-8px); border: 1px solid rgba(224, 247, 250, .55); border-radius: 14px; background: rgba(5, 38, 88, .96); box-shadow: 0 14px 30px rgba(0, 0, 0, .28); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
+      .theme-picker.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+      .theme-option { width: 27px; height: 27px; padding: 0; border: 2px solid transparent; border-radius: 50%; cursor: pointer; }
+      .theme-option:hover, .theme-option.selected { border-color: #e9ffff; box-shadow: 0 0 10px rgba(225, 255, 251, .72); }
+      .theme-option[data-theme="arctic"] { background: linear-gradient(135deg, #0d47a1, #1565c0); }.theme-option[data-theme="lagoon"] { background: linear-gradient(135deg, #00798c, #005460); }.theme-option[data-theme="midnight"] { background: linear-gradient(135deg, #051c4d, #0c4a7a); }.theme-option[data-theme="glacier"] { background: linear-gradient(135deg, #73c4ed, #2d7bb5); }.theme-option[data-theme="kelp"] { background: linear-gradient(135deg, #096960, #063e4e); }.theme-option[data-theme="frost"] { background: linear-gradient(135deg, #c5effc, #4b9dcc); }
       [contenteditable] { position: relative; z-index: 1; margin: 0; outline: none; cursor: text; }
       [contenteditable]:hover, [contenteditable]:focus { text-shadow: 0 0 21px rgba(159, 245, 255, .96); }
       [contenteditable]:focus { border-radius: 8px; box-shadow: 0 0 0 2px rgba(203, 255, 251, .75), 0 0 24px rgba(71, 230, 255, .48); background: rgba(255, 255, 255, .08); }
@@ -26,16 +40,34 @@
       .center-card:hover .edit-hint, .center-card:focus-within .edit-hint { opacity: 1; }
       .save-note { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); min-width: 270px; padding: 6px 10px; border-radius: 999px; background: rgba(4, 36, 70, .8); color: #c9fff8; font: 700 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
       .save-note.visible { opacity: 1; }
-      @keyframes sparkle { 0%, 100% { opacity: .35; transform: scale(.82); } 50% { opacity: .95; transform: scale(1.2); } }
       @media (max-width: 600px) { .center-card { width: 86vw; min-width: 0; padding: 28px 28px; } .edit-hint { display: none; } }
       @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
     </style>
   </head>
   <body>
     <main class="stage" aria-label="Editable center card">
-      <section class="center-card" id="card">
+      <section class="center-card" id="card" data-theme="arctic">
         <span class="edit-hint">CLICK TEXT TO EDIT</span>
-        <span class="card-icon" aria-hidden="true">❄️</span>
+        <button class="theme-button" id="theme-button" type="button" aria-label="Choose aquarium background" aria-expanded="false"></button>
+        <div class="theme-picker" id="theme-picker" aria-label="Choose aquarium background">
+          <button class="theme-option" type="button" data-theme="arctic" aria-label="Arctic blue"></button>
+          <button class="theme-option" type="button" data-theme="lagoon" aria-label="Lagoon teal"></button>
+          <button class="theme-option" type="button" data-theme="midnight" aria-label="Midnight blue"></button>
+          <button class="theme-option" type="button" data-theme="glacier" aria-label="Glacier ice"></button>
+          <button class="theme-option" type="button" data-theme="kelp" aria-label="Kelp green"></button>
+          <button class="theme-option" type="button" data-theme="frost" aria-label="Frost mist"></button>
+        </div>
+        <button class="card-icon" id="icon-button" type="button" aria-label="Choose card icon" aria-expanded="false">❄️</button>
+        <div class="icon-picker" id="icon-picker" aria-label="Choose card icon">
+          <button class="icon-option" type="button" data-icon="❄️" aria-label="Snowflake">❄️</button>
+          <button class="icon-option" type="button" data-icon="💧" aria-label="Water droplet">💧</button>
+          <button class="icon-option" type="button" data-icon="🧊" aria-label="Ice cube">🧊</button>
+          <button class="icon-option" type="button" data-icon="🐟" aria-label="Fish">🐟</button>
+          <button class="icon-option" type="button" data-icon="🐙" aria-label="Octopus">🐙</button>
+          <button class="icon-option" type="button" data-icon="🦑" aria-label="Squid">🦑</button>
+          <button class="icon-option" type="button" data-icon="🏔️" aria-label="Glacier">🏔️</button>
+          <button class="icon-option" type="button" data-icon="🐋" aria-label="Whale">🐋</button>
+        </div>
         <h1 id="tagline" contenteditable="true" spellcheck="true" aria-label="Editable tagline">YOUR TAGLINE</h1>
         <p id="subtext" contenteditable="true" spellcheck="true" aria-label="Editable subtext">YOUR SUBTEXT GOES HERE</p>
         <span class="save-note" id="save-note" role="status">Saved</span>
@@ -48,7 +80,14 @@
         const tagline = document.querySelector('#tagline');
         const subtext = document.querySelector('#subtext');
         const saveNote = document.querySelector('#save-note');
-        const defaults = { tagline: 'YOUR TAGLINE', subtext: 'YOUR SUBTEXT GOES HERE' };
+        const card = document.querySelector('#card');
+        const iconButton = document.querySelector('#icon-button');
+        const iconPicker = document.querySelector('#icon-picker');
+        const iconOptions = [...document.querySelectorAll('.icon-option')];
+        const themeButton = document.querySelector('#theme-button');
+        const themePicker = document.querySelector('#theme-picker');
+        const themeOptions = [...document.querySelectorAll('.theme-option')];
+        const defaults = { tagline: 'YOUR TAGLINE', subtext: 'YOUR SUBTEXT GOES HERE', icon: '❄️', theme: 'arctic' };
         let noteTimer;
 
         function cleanText(element, fallback) {
@@ -66,6 +105,8 @@
           const values = {
             tagline: cleanText(tagline, defaults.tagline),
             subtext: cleanText(subtext, defaults.subtext),
+            icon: iconButton.textContent,
+            theme: card.dataset.theme,
           };
           tagline.textContent = values.tagline;
           subtext.textContent = values.subtext;
@@ -78,7 +119,22 @@
             const values = JSON.parse(localStorage.getItem(STORAGE_KEY));
             if (values?.tagline) tagline.textContent = values.tagline;
             if (values?.subtext) subtext.textContent = values.subtext;
+            if (values?.icon && iconOptions.some((option) => option.dataset.icon === values.icon)) iconButton.textContent = values.icon;
+            const storedTheme = values?.theme === 'coral' ? 'frost' : values?.theme;
+            if (storedTheme && themeOptions.some((option) => option.dataset.theme === storedTheme)) card.dataset.theme = storedTheme;
           } catch (_) { /* Keep the placeholders if saved text is unavailable. */ }
+          iconOptions.forEach((option) => option.classList.toggle('selected', option.dataset.icon === iconButton.textContent));
+          themeOptions.forEach((option) => option.classList.toggle('selected', option.dataset.theme === card.dataset.theme));
+        }
+
+        function closePicker() {
+          iconPicker.classList.remove('open');
+          iconButton.setAttribute('aria-expanded', 'false');
+        }
+
+        function closeThemePicker() {
+          themePicker.classList.remove('open');
+          themeButton.setAttribute('aria-expanded', 'false');
         }
 
         [tagline, subtext].forEach((element) => {
@@ -98,11 +154,43 @@
           });
         });
 
+        iconButton.addEventListener('click', () => {
+          const isOpen = iconPicker.classList.toggle('open');
+          iconButton.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        iconOptions.forEach((option) => option.addEventListener('click', () => {
+          iconButton.textContent = option.dataset.icon;
+          closePicker();
+          save();
+        }));
+
+        themeButton.addEventListener('click', () => {
+          const isOpen = themePicker.classList.toggle('open');
+          themeButton.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        themeOptions.forEach((option) => option.addEventListener('click', () => {
+          card.dataset.theme = option.dataset.theme;
+          themeOptions.forEach((item) => item.classList.toggle('selected', item === option));
+          closeThemePicker();
+          save();
+        }));
+
+        document.addEventListener('click', (event) => {
+          if (!iconPicker.contains(event.target) && event.target !== iconButton) closePicker();
+          if (!themePicker.contains(event.target) && event.target !== themeButton) closeThemePicker();
+        });
+
         window.addEventListener('keydown', (event) => {
           if (event.key.toLowerCase() === 'r' && event.altKey) {
             localStorage.removeItem(STORAGE_KEY);
             tagline.textContent = defaults.tagline;
             subtext.textContent = defaults.subtext;
+            iconButton.textContent = defaults.icon;
+            card.dataset.theme = defaults.theme;
+            iconOptions.forEach((option) => option.classList.toggle('selected', option.dataset.icon === defaults.icon));
+            themeOptions.forEach((option) => option.classList.toggle('selected', option.dataset.theme === defaults.theme));
             showSaved('Reset to placeholders');
           }
         });
