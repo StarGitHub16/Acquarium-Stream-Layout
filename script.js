@@ -523,7 +523,7 @@ if (requestedGame) {
   const gameElement = document.getElementById('current-game');
   if (gameElement) gameElement.textContent = requestedGame;
 }
-
+ 
 if (requestedStatus) {
   if (statusText) statusText.textContent = requestedStatus.replace(/[-_]/g, ' ').toUpperCase();
   if (requestedStatus.includes('frozen') || requestedStatus.includes('offline')) {
