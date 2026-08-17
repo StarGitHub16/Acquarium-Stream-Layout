@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbox Overlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <svg style="position: absolute; width: 0; height: 0;">
+      <defs>
+        <filter id="iceCrystal">
+          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+  </head>
+  <body>
+    <aside class="vtuber-frame" aria-label="VTuber avatar safe area">
+        <div class="frame-label" style="font-size:12px">Filter Feed</div>
+        <!-- <div class="avatar-safe"><span>VTUBER<br />SAFE AREA</span></div> -->
+        <div class="rune rune-one">✧</div>
+        <div class="rune rune-two">✦</div>
+        <div class="frost-crystal" style="top: 12px; right: 12px;"></div>
+        <div class="frost-crystal" style="bottom: 12px; left: 12px; animation-delay: 1.5s;"></div>
+        
+      
+        <div class="chat-tank" aria-label="Chat overlay">
+          <div class="tank-glass"></div>
+          <div class="tank-water"></div>
+          <div class="tank-bubbles"></div>
+          <div class="chat-content">
+            <div class="chat-messages">
+              <div class="chat-message">
+                <span class="chat-user">User1:</span>
+                <span class="chat-text">Love the ice theme!</span>
+              </div>
+              <div class="chat-message">
+                <span class="chat-user">User2:</span>
+                <span class="chat-text">The bubbles are amazing</span>
+              </div>
+              <div class="chat-message">
+                <span class="chat-user">Mod:</span>
+                <span class="chat-text">Stream quality is perfect</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+  </body>
+</html>
