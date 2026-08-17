@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editable Center Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { font-family: Inter, sans-serif; color: #e0f7fa; background: transparent; }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }
+      .stage { position: relative; width: 100vw; height: 100vh; display: grid; place-items: center; pointer-events: none; }
+      .center-card { position: relative; width: min(62vw, 980px); min-width: 360px; padding: clamp(28px, 3vw, 56px) clamp(38px, 5vw, 92px); overflow: hidden; text-align: center; border: 2px solid rgba(66, 165, 245, .62); border-radius: 22px; background: linear-gradient(145deg, rgba(13, 71, 161, .91), rgba(21, 101, 192, .82)); box-shadow: 0 0 42px rgba(66, 165, 245, .42), inset 0 0 32px rgba(66, 165, 245, .22); pointer-events: auto; }
+      .center-card::before, .center-card::after { content: ''; position: absolute; width: 11px; height: 11px; background: rgba(224, 247, 250, .66); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); animation: sparkle 4s ease-in-out infinite; }
+      .center-card::before { top: 20%; left: 14%; }
+      .center-card::after { right: 17%; bottom: 23%; animation-delay: 1.8s; }
+      .card-icon { display: block; margin-bottom: 15px; font-size: clamp(34px, 3vw, 56px); filter: drop-shadow(0 0 16px rgba(224, 247, 250, .8)); }
+      [contenteditable] { position: relative; z-index: 1; margin: 0; outline: none; cursor: text; }
+      [contenteditable]:hover, [contenteditable]:focus { text-shadow: 0 0 21px rgba(159, 245, 255, .96); }
+      [contenteditable]:focus { border-radius: 8px; box-shadow: 0 0 0 2px rgba(203, 255, 251, .75), 0 0 24px rgba(71, 230, 255, .48); background: rgba(255, 255, 255, .08); }
+      #tagline { color: #e0f7fa; font: 700 clamp(28px, 3.2vw, 61px) Cinzel, Georgia, serif; letter-spacing: .1em; text-shadow: 0 0 20px rgba(0, 229, 255, .8); }
+      #subtext { margin-top: 15px; color: rgba(224, 247, 250, .87); font-size: clamp(13px, 1.4vw, 24px); font-weight: 500; letter-spacing: .08em; }
+      .edit-hint { position: absolute; right: 14px; top: 12px; opacity: 0; padding: 5px 8px; border: 1px solid rgba(224, 247, 250, .33); border-radius: 999px; color: rgba(224, 247, 250, .75); font: 700 9px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; transition: opacity .18s ease; pointer-events: none; }
+      .center-card:hover .edit-hint, .center-card:focus-within .edit-hint { opacity: 1; }
+      .save-note { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); min-width: 270px; padding: 6px 10px; border-radius: 999px; background: rgba(4, 36, 70, .8); color: #c9fff8; font: 700 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
+      .save-note.visible { opacity: 1; }
+      @keyframes sparkle { 0%, 100% { opacity: .35; transform: scale(.82); } 50% { opacity: .95; transform: scale(1.2); } }
+      @media (max-width: 600px) { .center-card { width: 86vw; min-width: 0; padding: 28px 28px; } .edit-hint { display: none; } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="stage" aria-label="Editable center card">
+      <section class="center-card" id="card">
+        <span class="edit-hint">CLICK TEXT TO EDIT</span>
+        <span class="card-icon" aria-hidden="true">❄️</span>
+        <h1 id="tagline" contenteditable="true" spellcheck="true" aria-label="Editable tagline">YOUR TAGLINE</h1>
+        <p id="subtext" contenteditable="true" spellcheck="true" aria-label="Editable subtext">YOUR SUBTEXT GOES HERE</p>
+        <span class="save-note" id="save-note" role="status">Saved</span>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const STORAGE_KEY = 'gelid-genteel-editable-center-card';
+        const tagline = document.querySelector('#tagline');
+        const subtext = document.querySelector('#subtext');
+        const saveNote = document.querySelector('#save-note');
+        const defaults = { tagline: 'YOUR TAGLINE', subtext: 'YOUR SUBTEXT GOES HERE' };
+        let noteTimer;
+
+        function cleanText(element, fallback) {
+          return element.textContent.replace(/\s+/g, ' ').trim() || fallback;
+        }
+
+        function showSaved(message = 'Saved') {
+          saveNote.textContent = message;
+          saveNote.classList.add('visible');
+          clearTimeout(noteTimer);
+          noteTimer = setTimeout(() => saveNote.classList.remove('visible'), 1600);
+        }
+
+        function save() {
+          const values = {
+            tagline: cleanText(tagline, defaults.tagline),
+            subtext: cleanText(subtext, defaults.subtext),
+          };
+          tagline.textContent = values.tagline;
+          subtext.textContent = values.subtext;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+          showSaved('Saved — text stays after refresh');
+        }
+
+        function load() {
+          try {
+            const values = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (values?.tagline) tagline.textContent = values.tagline;
+            if (values?.subtext) subtext.textContent = values.subtext;
+          } catch (_) { /* Keep the placeholders if saved text is unavailable. */ }
+        }
+
+        [tagline, subtext].forEach((element) => {
+          element.addEventListener('focus', () => showSaved('Type, then click away to save'));
+          element.addEventListener('blur', save);
+          element.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              element.blur();
+            }
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              load();
+              element.blur();
+              showSaved('Edit cancelled');
+            }
+          });
+        });
+
+        window.addEventListener('keydown', (event) => {
+          if (event.key.toLowerCase() === 'r' && event.altKey) {
+            localStorage.removeItem(STORAGE_KEY);
+            tagline.textContent = defaults.tagline;
+            subtext.textContent = defaults.subtext;
+            showSaved('Reset to placeholders');
+          }
+        });
+
+        load();
+      })();
+    </script>
+  </body>
+</html>
