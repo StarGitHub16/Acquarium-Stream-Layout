@@ -151,11 +151,9 @@
     return;
   }
 
-  // A direct live card URL always begins blank. Store the current event ID only
-  // as a baseline, so an old event cannot reveal a card on page load.
+  // A direct live card URL always begins blank. Do NOT read stored event IDs
+  // on page load, so new events are always processed.
   document.body.classList.add('card-live');
-  try { knownEventId = JSON.parse(localStorage.getItem(eventKey))?.id || null; } catch (_) { /* Keep a blank live page. */ }
-  try { knownControlEventId = JSON.parse(localStorage.getItem(controlEventKey))?.id || null; } catch (_) { /* Keep a blank live page. */ }
   channel && (channel.onmessage = ({ data }) => receiveLiveEvent(data));
   window.addEventListener('storage', (event) => { if (event.key === eventKey && event.newValue) readNewStoredEvent(); });
   controlChannel && (controlChannel.onmessage = ({ data }) => receiveControllerEvent(data));
