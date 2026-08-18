@@ -92,15 +92,18 @@
     knownControlEventId = event.id;
     const control = event.control || {};
     console.log('[Card] Control data:', control);
+    console.log('[Card] Comparing:', control.card, '===', pageName, '=', control.card === pageName);
     // Only show this card if the control specifically targets this card page
     // Hide for all other cases (different card or no card)
     if (control.card === pageName) {
+      console.log('[Card] MATCH - showing card');
       receiveLiveEvent({
         id: event.id,
         action: 'show',
         page: pageName,
       });
     } else {
+      console.log('[Card] NO MATCH - hiding card');
       // Hide this card for any other control
       receiveLiveEvent({
         id: event.id,
