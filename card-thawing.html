@@ -20,23 +20,26 @@
     </main>
     <script src="overlay-relay.js"></script>
     <script>
-      // Add control panel event listener for direct page access
+      // Control panel event listener for standalone card page use
       (() => {
         const controlEventKey = 'gelid-genteel-overlay-control';
         const controlChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
         let knownControlEventId = null;
+        const pageName = location.pathname.split('/').pop();
 
         function receiveControllerEvent(event) {
+          console.log('[Card Page] Received controller event:', event);
           if (!event?.id || event.id === knownControlEventId || event.type !== 'gelid-overlay-control') return;
           knownControlEventId = event.id;
           const control = event.control || {};
-          const pageName = location.pathname.split('/').pop();
           
           // Show card if this page matches the control's card
           if (control.card === pageName) {
+            console.log('[Card Page] Showing card:', pageName);
             document.body.classList.add('card-live');
             document.querySelector('.card-page')?.classList.add('is-live-active');
           } else {
+            console.log('[Card Page] Hiding card');
             document.body.classList.remove('card-live');
             document.querySelector('.card-page')?.classList.remove('is-live-active');
           }
