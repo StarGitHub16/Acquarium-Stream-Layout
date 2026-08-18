@@ -2,8 +2,11 @@
   const storageKey = 'gelid-genteel-card-event';
   const frames = new Map([...document.querySelectorAll('.card-layer__frame')].map((frame) => [frame.dataset.cardPage, frame]));
   const channel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-card-events') : null;
+  const controlStorageKey = 'gelid-genteel-overlay-control';
+  const controlChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
   let activeFrame = null;
   let lastEventId = null;
+  let lastControlEventId = null;
   let hideTimer;
 
   function hideCard() {
@@ -36,10 +39,29 @@
     try { receive(JSON.parse(localStorage.getItem(storageKey))); } catch (_) { /* Ignore an absent or malformed previous event. */ }
   }
 
+  function receiveControllerEvent(event) {
+    if (!event || event.type !== 'gelid-overlay-control' || !event.id || event.id === lastControlEventId) return;
+    lastControlEventId = event.id;
+    const control = event.control || {};
+    receive({
+      id: event.id,
+      action: control.card ? 'show' : 'hide',
+      page: control.card || null,
+      duration: control.cardDuration,
+    });
+  }
+
+  function receiveStoredControllerEvent() {
+    try { receiveControllerEvent(JSON.parse(localStorage.getItem(controlStorageKey))); } catch (_) { /* Ignore an absent or malformed controller event. */ }
+  }
+
   channel && (channel.onmessage = ({ data }) => receive(data));
   window.addEventListener('storage', (event) => { if (event.key === storageKey && event.newValue) receiveStoredEvent(); });
+  controlChannel && (controlChannel.onmessage = ({ data }) => receiveControllerEvent(data));
+  window.addEventListener('storage', (event) => { if (event.key === controlStorageKey && event.newValue) receiveStoredControllerEvent(); });
   // Deliberately do not replay the last stored event on load. The OBS card source
   // must always begin blank; only a new Card + Animation button press may reveal it.
+  try { lastControlEventId = JSON.parse(localStorage.getItem(controlStorageKey))?.id || null; } catch (_) { /* Keep a blank card source when storage is unavailable. */ }
 
   window.gelidCardLayerDiagnostics = () => {
     const iframeRect = activeFrame?.getBoundingClientRect();

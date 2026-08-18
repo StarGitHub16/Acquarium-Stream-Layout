@@ -9,7 +9,7 @@
     return button.textContent.trim();
   }
 
-  function publish(control) { 
+  function publish(control) {
     const event = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       type: 'gelid-overlay-control',

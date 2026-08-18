@@ -7,14 +7,17 @@
 
   const copyKey = `gelid-genteel-card-copy-${card.dataset.cardKey}`;
   const eventKey = 'gelid-genteel-card-event';
+  const controlEventKey = 'gelid-genteel-overlay-control';
   const pageName = location.pathname.split('/').pop();
   const params = new URLSearchParams(location.search);
   const isEditor = params.get('edit') === '1';
   const isEmbedded = window.top !== window.self;
   const isCardSourceFrame = isEmbedded && window.frameElement?.dataset.cardPage === pageName;
   const channel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-card-events') : null;
+  const controlChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
   const defaults = { title: title.textContent.trim(), subtitle: subtitle.textContent.trim() };
   let knownEventId = null;
+  let knownControlEventId = null;
 
   function cleanText(element, fallback) {
     return element.textContent.replace(/\s+/g, ' ').trim() || fallback;
@@ -70,6 +73,21 @@
     try { receiveLiveEvent(JSON.parse(localStorage.getItem(eventKey))); } catch (_) { /* Ignore missing or malformed storage. */ }
   }
 
+  function receiveControllerEvent(event) {
+    if (!event?.id || event.id === knownControlEventId || event.type !== 'gelid-overlay-control') return;
+    knownControlEventId = event.id;
+    const control = event.control || {};
+    receiveLiveEvent({
+      id: event.id,
+      action: control.card === pageName ? 'show' : 'hide',
+      page: control.card || null,
+    });
+  }
+
+  function readNewStoredControllerEvent() {
+    try { receiveControllerEvent(JSON.parse(localStorage.getItem(controlEventKey))); } catch (_) { /* Ignore missing or malformed controller storage. */ }
+  }
+
   loadCopy();
 
   if (isEditor) {
@@ -120,6 +138,9 @@
   // as a baseline, so an old event cannot reveal a card on page load.
   document.body.classList.add('card-live');
   try { knownEventId = JSON.parse(localStorage.getItem(eventKey))?.id || null; } catch (_) { /* Keep a blank live page. */ }
+  try { knownControlEventId = JSON.parse(localStorage.getItem(controlEventKey))?.id || null; } catch (_) { /* Keep a blank live page. */ }
   channel && (channel.onmessage = ({ data }) => receiveLiveEvent(data));
   window.addEventListener('storage', (event) => { if (event.key === eventKey && event.newValue) readNewStoredEvent(); });
+  controlChannel && (controlChannel.onmessage = ({ data }) => receiveControllerEvent(data));
+  window.addEventListener('storage', (event) => { if (event.key === controlEventKey && event.newValue) readNewStoredControllerEvent(); });
 })();
