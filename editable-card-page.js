@@ -5,7 +5,6 @@
   const editHelp = document.querySelector('.card-edit-help');
   if (!card || !title || !subtitle) return;
 
-<<<<<<< HEAD
   const copyKey = `gelid-genteel-card-copy-${card.dataset.cardKey}`;
   const eventKey = 'gelid-genteel-card-event';
   const pageName = location.pathname.split('/').pop();
@@ -16,17 +15,11 @@
   const channel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-card-events') : null;
   const defaults = { title: title.textContent.trim(), subtitle: subtitle.textContent.trim() };
   let knownEventId = null;
-=======
-  const key = `gelid-genteel-card-copy-${card.dataset.cardKey}`;
-  const defaults = { title: title.textContent.trim(), subtitle: subtitle.textContent.trim() };
-  const isStandaloneEditor = window.top === window.self;
->>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
 
   function cleanText(element, fallback) {
     return element.textContent.replace(/\s+/g, ' ').trim() || fallback;
   }
 
-<<<<<<< HEAD
   function loadCopy() {
     try {
       const copy = JSON.parse(localStorage.getItem(copyKey));
@@ -38,27 +31,19 @@
   }
 
   function saveCopy() {
-=======
-  function save() {
->>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
     const copy = {
       title: cleanText(title, defaults.title),
       subtitle: cleanText(subtitle, defaults.subtitle),
     };
     title.textContent = copy.title;
     subtitle.textContent = copy.subtitle;
-<<<<<<< HEAD
     localStorage.setItem(copyKey, JSON.stringify(copy));
-=======
-    localStorage.setItem(key, JSON.stringify(copy));
->>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
     if (editHelp) {
       editHelp.textContent = 'Saved';
       window.setTimeout(() => { editHelp.textContent = 'Click text to edit · Enter to save'; }, 1200);
     }
   }
 
-<<<<<<< HEAD
   function setLiveVisible(visible) {
     card.classList.toggle('is-live-active', visible);
     if (visible) playSheen();
@@ -145,49 +130,4 @@
       page: control.card || null,
     });
   });
-=======
-  function load() {
-    try {
-      const copy = JSON.parse(localStorage.getItem(key));
-      if (copy?.title) title.textContent = copy.title;
-      if (copy?.subtitle) subtitle.textContent = copy.subtitle;
-    } catch (_) {
-      // Keep the built-in card copy if no saved edit is available.
-    }
-  }
-
-  load();
-
-  if (!isStandaloneEditor) {
-    title.contentEditable = 'false';
-    subtitle.contentEditable = 'false';
-    return;
-  }
-
-  [title, subtitle].forEach((element) => {
-    element.addEventListener('blur', save);
-    element.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        element.blur();
-      }
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        load();
-        element.blur();
-      }
-    });
-  });
-
-  window.addEventListener('keydown', (event) => {
-    if (event.altKey && event.key.toLowerCase() === 'r') {
-      localStorage.removeItem(key);
-      title.textContent = defaults.title;
-      subtitle.textContent = defaults.subtitle;
-      if (editHelp) editHelp.textContent = 'Reset to defaults';
-    }
-  });
-
-  document.body.classList.add('card-editor');
->>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
 })();

@@ -53,10 +53,7 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
 .overlay.video-underlay:not(.thawing):not(.frozen):not(.frigid) .bubble-container { opacity: 0; }
 .overlay.video-underlay .gameplay-frame,
 .overlay.video-underlay .card-iframe-host { background: transparent !important; }
-<<<<<<< HEAD
 .overlay.video-underlay .demo-controls { display: none !important; }
-=======
->>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
 .overlay.video-underlay.preview-underlay {
   background-color: #172432;
   background-image: linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.08) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.08) 75%);
@@ -532,10 +529,6 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none; }
-.card-iframe-host { position: absolute; inset: 0; z-index: 11; display: none; overflow: hidden; pointer-events: none; }
-.card-iframe-host.is-visible { display: block; }
-.card-iframe-host iframe { position: absolute; inset: 0; display: none; width: 100%; height: 100%; border: 0; background: transparent; }
-.card-iframe-host iframe.is-active { display: block; }
 .inner-rim { position: absolute; inset: 10px; border: 1px solid rgba(190, 239, 255, .22); box-shadow: inset 0 0 20px rgba(113, 217, 255, .08), 0 0 17px rgba(125, 216, 255, .05); }
 
 /* Center screen state messages */
