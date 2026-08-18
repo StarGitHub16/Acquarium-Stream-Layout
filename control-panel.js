@@ -14,7 +14,7 @@
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       type: 'gelid-overlay-control',
       control,
-      createdAt: Date.now(),
+      createdAt: Date.now(), 
     };
     console.log('[Control Panel] Publishing event:', event);
     try { localStorage.setItem(storageKey, JSON.stringify(event)); } catch (_) { /* BroadcastChannel remains available when storage is blocked. */ }
