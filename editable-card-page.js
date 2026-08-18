@@ -68,8 +68,12 @@
       setLiveVisible(true);
       return;
     }
-    console.log('[Card] Hiding card');
-    setLiveVisible(false);
+    if (event.action === 'hide') {
+      console.log('[Card] Hiding card');
+      setLiveVisible(false);
+      return;
+    }
+    console.log('[Card] No action taken for event:', event);
   }
 
   function readNewStoredEvent() {
@@ -88,12 +92,13 @@
     knownControlEventId = event.id;
     const control = event.control || {};
     console.log('[Card] Control data:', control);
-    // Hide this card if the control is for a different card or no card at all
+    // Only show this card if the control specifically targets this card page
+    // Hide for all other cases (different card or no card)
     const shouldShow = control.card === pageName;
     receiveLiveEvent({
       id: event.id,
       action: shouldShow ? 'show' : 'hide',
-      page: control.card || null,
+      page: shouldShow ? pageName : null,
     });
   }
 
