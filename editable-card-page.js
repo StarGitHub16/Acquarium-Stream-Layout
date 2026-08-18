@@ -9,6 +9,7 @@
   const eventKey = 'gelid-genteel-card-event';
   const controlEventKey = 'gelid-genteel-overlay-control';
   const pageName = location.pathname.split('/').pop();
+  const cardKey = card.dataset.cardKey; // Use data-card-key for matching
   const params = new URLSearchParams(location.search);
   const isEditor = params.get('edit') === '1';
   const isEmbedded = window.top !== window.self;
@@ -87,15 +88,17 @@
   }
 
   function receiveControllerEvent(event) {
-    console.log('[Card] receiveControllerEvent:', { event, pageName, knownControlEventId });
+    console.log('[Card] receiveControllerEvent:', { event, pageName, cardKey, knownControlEventId });
     if (!event?.id || event.id === knownControlEventId || event.type !== 'gelid-overlay-control') return;
     knownControlEventId = event.id;
     const control = event.control || {};
     console.log('[Card] Control data:', control);
-    console.log('[Card] Comparing:', control.card, '===', pageName, '=', control.card === pageName);
+    // Extract card key from control.card (e.g., "card-thawing.html" -> "thawing")
+    const controlCardKey = control.card ? control.card.replace(/^card-/, '').replace(/\.html$/, '') : null;
+    console.log('[Card] Comparing:', controlCardKey, '===', cardKey, '=', controlCardKey === cardKey);
     // Only show this card if the control specifically targets this card page
     // Hide for all other cases (different card or no card)
-    if (control.card === pageName) {
+    if (controlCardKey === cardKey) {
       console.log('[Card] MATCH - showing card');
       receiveLiveEvent({
         id: event.id,
