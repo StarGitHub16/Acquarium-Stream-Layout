@@ -19,6 +19,40 @@
       </div>
     </main>
     <script src="overlay-relay.js"></script>
+    <script>
+      // Add control panel event listener for direct page access
+      (() => {
+        const controlEventKey = 'gelid-genteel-overlay-control';
+        const controlChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
+        let knownControlEventId = null;
+
+        function receiveControllerEvent(event) {
+          if (!event?.id || event.id === knownControlEventId || event.type !== 'gelid-overlay-control') return;
+          knownControlEventId = event.id;
+          const control = event.control || {};
+          const pageName = location.pathname.split('/').pop();
+          
+          // Show card if this page matches the control's card
+          if (control.card === pageName) {
+            document.body.classList.add('card-live');
+            document.querySelector('.card-page')?.classList.add('is-live-active');
+          } else {
+            document.body.classList.remove('card-live');
+            document.querySelector('.card-page')?.classList.remove('is-live-active');
+          }
+        }
+
+        function readNewStoredControllerEvent() {
+          try { 
+            const stored = localStorage.getItem(controlEventKey);
+            if (stored) receiveControllerEvent(JSON.parse(stored));
+          } catch (_) {}
+        }
+
+        controlChannel && (controlChannel.onmessage = ({ data }) => receiveControllerEvent(data));
+        window.addEventListener('storage', (event) => { if (event.key === controlEventKey && event.newValue) readNewStoredControllerEvent(); });
+      })();
+    </script>
     <script src="editable-card-page.js?v=live-card-2"></script>
   </body>
 </html>
