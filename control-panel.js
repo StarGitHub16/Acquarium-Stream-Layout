@@ -16,6 +16,7 @@
       control,
       createdAt: Date.now(),
     };
+    console.log('[Control Panel] Publishing event:', event);
     try { localStorage.setItem(storageKey, JSON.stringify(event)); } catch (_) { /* BroadcastChannel remains available when storage is blocked. */ }
     channel?.postMessage(event);
   }

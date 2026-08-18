@@ -20,6 +20,7 @@ function publishCardEvent(action, page = null, duration = 'manual') {
     duration,
     createdAt: Date.now(),
   };
+  console.log('[Overlay] Publishing card event:', event);
   try { localStorage.setItem(cardEventStorageKey, JSON.stringify(event)); } catch (_) { /* The live water layer still animates if storage is unavailable. */ }
   cardEventChannel?.postMessage(event);
   return event;

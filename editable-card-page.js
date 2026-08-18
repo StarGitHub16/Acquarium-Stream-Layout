@@ -60,23 +60,34 @@
   }
 
   function receiveLiveEvent(event) {
+    console.log('[Card] receiveLiveEvent:', { event, pageName, knownEventId });
     if (!event?.id || event.id === knownEventId) return;
     knownEventId = event.id;
     if (event.action === 'show' && event.page === pageName) {
+      console.log('[Card] Showing card:', pageName);
       setLiveVisible(true);
       return;
     }
+    console.log('[Card] Hiding card');
     setLiveVisible(false);
   }
 
   function readNewStoredEvent() {
-    try { receiveLiveEvent(JSON.parse(localStorage.getItem(eventKey))); } catch (_) { /* Ignore missing or malformed storage. */ }
+    try { 
+      const stored = localStorage.getItem(eventKey);
+      if (stored) {
+        console.log('[Card] Reading stored event:', stored);
+        receiveLiveEvent(JSON.parse(stored));
+      }
+    } catch (_) { /* Ignore missing or malformed storage. */ }
   }
 
   function receiveControllerEvent(event) {
+    console.log('[Card] receiveControllerEvent:', { event, pageName, knownControlEventId });
     if (!event?.id || event.id === knownControlEventId || event.type !== 'gelid-overlay-control') return;
     knownControlEventId = event.id;
     const control = event.control || {};
+    console.log('[Card] Control data:', control);
     receiveLiveEvent({
       id: event.id,
       action: control.card === pageName ? 'show' : 'hide',
@@ -85,7 +96,13 @@
   }
 
   function readNewStoredControllerEvent() {
-    try { receiveControllerEvent(JSON.parse(localStorage.getItem(controlEventKey))); } catch (_) { /* Ignore missing or malformed controller storage. */ }
+    try { 
+      const stored = localStorage.getItem(controlEventKey);
+      if (stored) {
+        console.log('[Card] Reading stored controller event:', stored);
+        receiveControllerEvent(JSON.parse(stored));
+      }
+    } catch (_) { /* Ignore missing or malformed controller storage. */ }
   }
 
   loadCopy();
