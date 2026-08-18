@@ -3,6 +3,43 @@ const statusText = document.querySelector('#statusText');
 const statusDot = document.querySelector('.status-dot');
 const motionButton = document.querySelector('#toggleMotion');
 const freezeButton = document.querySelector('#toggleFreeze');
+<<<<<<< HEAD
+const cardEventStorageKey = 'gelid-genteel-card-event';
+const cardEventChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-card-events') : null;
+const controlEventStorageKey = 'gelid-genteel-overlay-control';
+const controlEventChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
+let activeCardPage = null;
+let cardHideTimer;
+let lastCardActivation = null;
+let lastControlEventId = null;
+
+function publishCardEvent(action, page = null, duration = 'manual') {
+  const event = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    action,
+    page,
+    duration,
+    createdAt: Date.now(),
+  };
+  try { localStorage.setItem(cardEventStorageKey, JSON.stringify(event)); } catch (_) { /* The live water layer still animates if storage is unavailable. */ }
+  cardEventChannel?.postMessage(event);
+  return event;
+}
+
+function hideTriggeredCard() {
+  clearTimeout(cardHideTimer);
+  publishCardEvent('hide');
+  activeCardPage = null;
+}
+
+function showTriggeredCard(page, duration = 12000) {
+  if (!page) return;
+  clearTimeout(cardHideTimer);
+  const triggerStartedAt = performance.now();
+  activeCardPage = page;
+  publishCardEvent('show', page, duration);
+  lastCardActivation = { page, publishedDelayMs: Number((performance.now() - triggerStartedAt).toFixed(2)) };
+=======
 const cardFrameHost = document.querySelector('#card-iframe-host');
 const cardFrames = new Map([...document.querySelectorAll('.card-frame')].map((frame) => [frame.dataset.cardPage, frame]));
 let activeCardFrame = null;
@@ -34,6 +71,7 @@ function showTriggeredCard(page, duration = 12000) {
   };
   if (cardFrame.dataset.ready === 'true') revealCard();
   else cardFrame.addEventListener('load', revealCard, { once: true });
+>>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
   const durationMs = Number(duration);
   if (Number.isFinite(durationMs) && durationMs > 0) {
     cardHideTimer = window.setTimeout(hideTriggeredCard, durationMs);
@@ -540,6 +578,8 @@ function applyAnimation(animation) {
   }
 
   restoreStandardAquarium();
+<<<<<<< HEAD
+=======
 }
 
 for (const button of document.querySelectorAll('[data-animation]')) {
@@ -561,7 +601,50 @@ for (const button of document.querySelectorAll('[data-animation]')) {
     applyAnimation(animation);
     if (button.dataset.card) showTriggeredCard(button.dataset.card, button.dataset.cardDuration);
   });
+>>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
 }
+
+function executeOverlayControl(control = {}) {
+    const animation = control.animation || 'standard';
+    const hasMatchingState = animation !== 'standard' && overlay.classList.contains(animation);
+    if ((control.animationToggle === true || control.animationToggle === 'true') && hasMatchingState) {
+      restoreStandardAquarium();
+      return;
+    }
+    const isActiveCard = (control.cardToggle === true || control.cardToggle === 'true')
+      && activeCardPage === control.card;
+    if (isActiveCard) {
+      restoreStandardAquarium();
+      return;
+    }
+    if (!control.card) hideTriggeredCard();
+    applyAnimation(animation);
+    if (control.card) showTriggeredCard(control.card, control.cardDuration);
+}
+
+for (const button of document.querySelectorAll('[data-animation]')) {
+  button.addEventListener('click', () => executeOverlayControl({
+    animation: button.dataset.animation,
+    animationToggle: button.dataset.animationToggle,
+    card: button.dataset.card,
+    cardDuration: button.dataset.cardDuration,
+    cardToggle: button.dataset.cardToggle,
+  }));
+}
+
+function receiveOverlayControl(event) {
+  if (!event || event.type !== 'gelid-overlay-control' || !event.id || event.id === lastControlEventId) return;
+  lastControlEventId = event.id;
+  executeOverlayControl(event.control);
+}
+
+function receiveStoredOverlayControl() {
+  try { receiveOverlayControl(JSON.parse(localStorage.getItem(controlEventStorageKey))); } catch (_) { /* Ignore absent or malformed control events. */ }
+}
+
+controlEventChannel && (controlEventChannel.onmessage = ({ data }) => receiveOverlayControl(data));
+window.addEventListener('storage', (event) => { if (event.key === controlEventStorageKey && event.newValue) receiveStoredOverlayControl(); });
+window.GelidOverlayRelay?.subscribe((event) => receiveOverlayControl(event));
 
 motionButton?.addEventListener('click', () => {
   overlay.classList.toggle('reduced-motion');
@@ -611,6 +694,11 @@ window.gelidUnderlayDiagnostics = () => {
   const frame = document.querySelector('.gameplay-frame');
   const frameRect = frame?.getBoundingClientRect();
   const decorativeLayers = document.querySelectorAll('.coral, .seaweed, .octopus, .crab, .glacier, .ice-formation, .ice-crack, .frost-overlay, .fish-container');
+<<<<<<< HEAD
+  return {
+    videoUnderlay: overlay.classList.contains('video-underlay'),
+    animationState: ['thawing', 'frozen', 'frigid'].find((state) => overlay.classList.contains(state)) || 'standard',
+=======
   const iframeRect = activeCardFrame?.getBoundingClientRect();
   const cardRect = activeCardFrame?.contentDocument?.querySelector('.card-page')?.getBoundingClientRect();
   const visibleCard = frameRect && iframeRect && cardRect && {
@@ -623,6 +711,7 @@ window.gelidUnderlayDiagnostics = () => {
   };
   return {
     videoUnderlay: overlay.classList.contains('video-underlay'),
+>>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
     frame: frameRect && {
       left: frameRect.left,
       top: frameRect.top,
@@ -631,6 +720,9 @@ window.gelidUnderlayDiagnostics = () => {
       ratio: Number((frameRect.width / frameRect.height).toFixed(4)),
       transparentBackground: getComputedStyle(frame).backgroundColor === 'rgba(0, 0, 0, 0)',
     },
+<<<<<<< HEAD
+    cardPublisher: { activePage: activeCardPage, lastActivation: lastCardActivation },
+=======
     cardHost: {
       visible: cardFrameHost?.classList.contains('is-visible') ?? false,
       page: activeCardFrame?.dataset.cardPage || null,
@@ -639,6 +731,7 @@ window.gelidUnderlayDiagnostics = () => {
       centered: visibleCard ? Math.abs(visibleCard.centerDeltaX) < 1 && Math.abs(visibleCard.centerDeltaY) < 1 : null,
       lastActivation: lastCardActivation,
     },
+>>>>>>> fd434e17c9f77e79808b91390996ca275b540f8a
     decorativeLayersHidden: [...decorativeLayers].every((layer) => Number(getComputedStyle(layer).opacity) === 0),
     particles: { baseBubbles: bubbleSystem.bubbles.length, thawingBubbleTarget: bubbleSystem.thawingMaxBubbles, bottomBubbles: bottomBubbleSystem.bubbles.length },
   };
