@@ -31,6 +31,36 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
   background: linear-gradient(180deg, #1a237e 0%, #1565c0 30%, #00897b 70%, #00695c 100%);
 }
 
+/* OBS video-underlay mode: leaves the browser source transparent so a Game Capture or media source below stays visible. */
+.overlay.video-underlay,
+.overlay.video-underlay.thawing,
+.overlay.video-underlay.frozen,
+.overlay.video-underlay.frigid { background: transparent; }
+.overlay.video-underlay::before,
+.overlay.video-underlay::after { background: transparent; }
+.overlay.video-underlay .ambient-glow,
+.overlay.video-underlay .bioluminescent-glow,
+.overlay.video-underlay .starfield,
+.overlay.video-underlay .fish-container,
+.overlay.video-underlay .coral,
+.overlay.video-underlay .seaweed,
+.overlay.video-underlay .octopus,
+.overlay.video-underlay .crab,
+.overlay.video-underlay .glacier,
+.overlay.video-underlay .ice-formation,
+.overlay.video-underlay .ice-crack,
+.overlay.video-underlay .frost-overlay { opacity: 0 !important; }
+.overlay.video-underlay:not(.thawing):not(.frozen):not(.frigid) .bubble-container { opacity: 0; }
+.overlay.video-underlay .gameplay-frame,
+.overlay.video-underlay .card-iframe-host { background: transparent !important; }
+.overlay.video-underlay .demo-controls { display: none !important; }
+.overlay.video-underlay.preview-underlay {
+  background-color: #172432;
+  background-image: linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.08) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.08) 75%);
+  background-position: 0 0, 0 16px, 16px -16px, -16px 0;
+  background-size: 32px 32px;
+}
+
 .overlay.thawing .bioluminescent-glow {
   opacity: 0.5;
   animation-duration: 2s;
@@ -949,10 +979,12 @@ h1 { margin: 0; color: #e0f7fa; font: 600 clamp(15px, 1.4vw, 25px) Cinzel, serif
   50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; } 
 }
 
-.demo-controls { position: absolute; z-index: 10; top: 12px; right: 12px; display: flex; gap: 4px; opacity: 0; transition: opacity .2s var(--ease); }
+.demo-controls { position: absolute; z-index: 12; top: 12px; right: 12px; display: flex; gap: 8px; opacity: 0; transition: opacity .2s var(--ease); }
 .overlay:hover .demo-controls, .demo-controls:focus-within { opacity: 1; }
 .demo-controls button { border: 1px solid rgba(0, 229, 255, .35); background: rgba(10, 25, 47, .8); color: var(--bioluminescent); padding: 5px 8px; font: 10px Inter, sans-serif; cursor: pointer; }
 .demo-controls button:hover { border-color: var(--bioluminescent); background: rgba(13, 71, 161, .9); }
+.control-group { display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid rgba(145, 226, 255, .18); background: rgba(4, 26, 52, .44); }
+.control-label { color: rgba(198, 249, 255, .7); font: 700 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
 
 @keyframes snowfall { from { background-position: 17px -100px, 70px -40px; } to { background-position: 114px 900px, 249px 940px; } }
 @keyframes pulse { 0%, 100% { opacity: .45; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.16); } }

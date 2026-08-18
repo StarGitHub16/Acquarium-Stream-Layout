@@ -3,19 +3,75 @@ const statusText = document.querySelector('#statusText');
 const statusDot = document.querySelector('.status-dot');
 const motionButton = document.querySelector('#toggleMotion');
 const freezeButton = document.querySelector('#toggleFreeze');
+const cardEventStorageKey = 'gelid-genteel-card-event';
+const cardEventChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-card-events') : null;
+const controlEventStorageKey = 'gelid-genteel-overlay-control';
+const controlEventChannel = 'BroadcastChannel' in window ? new BroadcastChannel('gelid-genteel-overlay-controls') : null;
+let activeCardPage = null;
+let cardHideTimer;
+let lastCardActivation = null;
+let lastControlEventId = null;
+
+function publishCardEvent(action, page = null, duration = 'manual') {
+  const event = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    action,
+    page,
+    duration,
+    createdAt: Date.now(),
+  };
+  try { localStorage.setItem(cardEventStorageKey, JSON.stringify(event)); } catch (_) { /* The live water layer still animates if storage is unavailable. */ }
+  cardEventChannel?.postMessage(event);
+  return event;
+}
+
+function hideTriggeredCard() {
+  clearTimeout(cardHideTimer);
+  publishCardEvent('hide');
+  activeCardPage = null;
+}
+
+function showTriggeredCard(page, duration = 12000) {
+  if (!page) return;
+  clearTimeout(cardHideTimer);
+  const triggerStartedAt = performance.now();
+  activeCardPage = page;
+  publishCardEvent('show', page, duration);
+  lastCardActivation = { page, publishedDelayMs: Number((performance.now() - triggerStartedAt).toFixed(2)) };
+  const durationMs = Number(duration);
+  if (Number.isFinite(durationMs) && durationMs > 0) {
+    cardHideTimer = window.setTimeout(hideTriggeredCard, durationMs);
+  }
+}
+
+function restoreStandardAquarium() {
+  hideTriggeredCard();
+  overlay.classList.remove('thawing', 'frozen', 'frigid');
+  document.querySelectorAll('.center-message').forEach((message) => message.classList.remove('active'));
+  if (statusText) statusText.textContent = 'LIVE FROM THE TANK';
+  if (statusDot) statusDot.style.background = '#00e5ff';
+  bubbleSystem.unfreeze();
+  bubbleSystem.setThawing(false);
+  bottomBubbleSystem.stop();
+  fishSystem.setLive(true);
+  if (!fishSystem.isRunning) fishSystem.toggle();
+  if (freezeButton) freezeButton.textContent = 'Freeze';
+}
 
 // Bubble system for underwater effect
 class BubbleSystem {
-  constructor(container, maxBubbles = 50) {
+  constructor(container, maxBubbles = 32) {
     this.container = container;
     this.maxBubbles = maxBubbles;
-    this.thawingMaxBubbles = 100;
+    this.thawingMaxBubbles = 52;
     this.bubbles = [];
     this.iceCrystals = [];
     this.gameplayFrame = document.querySelector('.gameplay-frame');
     this.isRunning = true;
     this.isFrozen = false;
     this.isThawing = false;
+    this.frameRect = this.gameplayFrame?.getBoundingClientRect() || null;
+    window.addEventListener('resize', () => { this.frameRect = this.gameplayFrame?.getBoundingClientRect() || null; }, { passive: true });
     this.init();
   }
 
@@ -44,10 +100,12 @@ class BubbleSystem {
       border-radius: 50%;
       pointer-events: none;
       opacity: ${opacity};
-      left: ${startX}%;
-      top: ${startY}%;
+      left: 0;
+      top: 0;
+      transform: translate3d(${startX}vw, ${startY}vh, 0);
       box-shadow: 0 0 ${size / 2}px rgba(0, 229, 255, 0.3), inset 0 0 ${size / 3}px rgba(255, 255, 255, 0.5);
       transition: opacity 1s ease-in-out;
+      will-change: transform;
     `;
 
     this.container.appendChild(bubble);
@@ -109,6 +167,7 @@ class BubbleSystem {
   }
 
   setThawing(thawing) {
+    if (this.isThawing === thawing) return;
     this.isThawing = thawing;
 
     if (thawing) {
@@ -129,8 +188,8 @@ class BubbleSystem {
   }
 
   isInsideGameplayFrame(x, y) {
-    if (!this.gameplayFrame) return false;
-    const frameRect = this.gameplayFrame.getBoundingClientRect();
+    const frameRect = this.frameRect;
+    if (!frameRect) return false;
     const pixelX = (x / 100) * window.innerWidth;
     const pixelY = (y / 100) * window.innerHeight;
     const padding = 30;
@@ -155,8 +214,7 @@ class BubbleSystem {
           bubble.y = Math.random() * 50 + 110;
           bubble.x = Math.random() * 100;
         }
-        bubble.element.style.left = `${bubble.x}%`;
-        bubble.element.style.top = `${bubble.y}%`;
+        bubble.element.style.transform = `translate3d(${bubble.x}vw, ${bubble.y}vh, 0)`;
       });
     }
 
@@ -184,7 +242,7 @@ const bubbleContainer = document.createElement('div');
 bubbleContainer.className = 'bubble-container';
 bubbleContainer.setAttribute('aria-hidden', 'true');
 overlay.appendChild(bubbleContainer);
-const bubbleSystem = new BubbleSystem(bubbleContainer, 60);
+const bubbleSystem = new BubbleSystem(bubbleContainer, 32);
 
 // Fish system for underwater life
 class FishSystem {
@@ -306,7 +364,7 @@ const fishSystem = new FishSystem(fishContainer, 6);
 
 // Bottom border bubble system for thawing effect
 class BottomBubbleSystem {
-  constructor(container, maxBubbles = 40) {
+  constructor(container, maxBubbles = 24) {
     this.container = container;
     this.maxBubbles = maxBubbles;
     this.bubbles = [];
@@ -353,10 +411,12 @@ class BottomBubbleSystem {
       border-radius: 50%;
       pointer-events: none;
       opacity: ${opacity};
-      left: ${startX}%;
-      top: ${startY}px;
+      left: 0;
+      top: 0;
+      transform: translate3d(${startX}vw, ${startY}px, 0);
       box-shadow: 0 0 ${size * 1.5}px rgba(0, 229, 255, 0.6), inset 0 0 ${size * 0.7}px rgba(255, 255, 255, 0.7);
       transition: opacity 0.5s ease-in-out;
+      will-change: transform;
     `;
     this.bubbleContainer.appendChild(bubble);
     this.bubbles.push({ element: bubble, x: startX, y: startY, speed, wobble, wobbleSpeed, originalOpacity: opacity });
@@ -375,14 +435,13 @@ class BottomBubbleSystem {
         bubble.y = viewportHeight + Math.random() * 50 + 20;
         bubble.x = Math.random() * 100;
       }
-      bubble.element.style.left = `${bubble.x}%`;
-      bubble.element.style.top = `${bubble.y}px`;
+      bubble.element.style.transform = `translate3d(${bubble.x}vw, ${bubble.y}px, 0)`;
     });
     requestAnimationFrame(() => this.animate());
   }
 }
 
-const bottomBubbleSystem = new BottomBubbleSystem(overlay, 40);
+const bottomBubbleSystem = new BottomBubbleSystem(overlay, 24);
 
 // Chat-tank bubbles are optional because the entire chat tank is commented out in your HTML.
 class ChatTankBubbleSystem {
@@ -444,56 +503,90 @@ class ChatTankBubbleSystem {
 const chatTank = document.querySelector('.chat-tank');
 const chatTankBubbleSystem = chatTank ? new ChatTankBubbleSystem(chatTank) : null;
 
-// Preview controls
-for (const button of document.querySelectorAll('[data-status]')) {
-  button.addEventListener('click', () => {
-    const status = button.dataset.status || '';
-    if (statusText) statusText.textContent = status;
+function applyAnimation(animation) {
+  overlay.classList.remove('thawing', 'frozen', 'frigid');
+  document.querySelectorAll('.center-message').forEach((message) => message.classList.remove('active'));
 
-    overlay.classList.remove('thawing', 'frozen', 'frigid');
-    document.querySelectorAll('.center-message').forEach((message) => message.classList.remove('active'));
+  if (animation === 'thawing') {
+    if (statusText) statusText.textContent = 'THE AQUARIUM OPENS SOON';
+    if (statusDot) statusDot.style.background = '#4fc3f7';
+    overlay.classList.add('thawing');
+    bubbleSystem.unfreeze();
+    bubbleSystem.setThawing(true);
+    bottomBubbleSystem.start();
+    fishSystem.setLive(false);
+    if (!fishSystem.isRunning) fishSystem.toggle();
+    return;
+  }
 
-    if (status.includes('OPENS SOON')) {
-      if (statusDot) statusDot.style.background = '#4fc3f7';
-      overlay.classList.add('thawing');
-      bubbleSystem.unfreeze();
-      bubbleSystem.setThawing(true);
-      bottomBubbleSystem.start();
-      fishSystem.setLive(false);
-      if (!fishSystem.isRunning) fishSystem.toggle();
-      if (freezeButton) freezeButton.textContent = 'Freeze';
-      document.querySelector('.starting-message')?.classList.add('active');
-    } else if (status.includes('COMPLETELY')) {
-      if (statusDot) statusDot.style.background = '#9c27b0';
-      overlay.classList.add('frigid');
-      bubbleSystem.freeze();
-      bubbleSystem.setThawing(false);
-      bottomBubbleSystem.stop();
-      fishSystem.setLive(false);
-      if (fishSystem.isRunning) fishSystem.toggle();
-      if (freezeButton) freezeButton.textContent = 'Thaw';
-      document.querySelector('.offline-message')?.classList.add('active');
-    } else if (status.includes('RETURNING') || button.textContent.trim() === 'BRB') {
-      if (statusDot) statusDot.style.background = '#1976d2';
-      overlay.classList.add('frozen');
-      bubbleSystem.freeze();
-      bubbleSystem.setThawing(false);
-      bottomBubbleSystem.stop();
-      fishSystem.setLive(false);
-      if (fishSystem.isRunning) fishSystem.toggle();
-      if (freezeButton) freezeButton.textContent = 'Thaw';
-      document.querySelector('.brb-message')?.classList.add('active');
-    } else {
-      if (statusDot) statusDot.style.background = '#00e5ff';
-      bubbleSystem.unfreeze();
-      bubbleSystem.setThawing(false);
-      bottomBubbleSystem.stop();
-      fishSystem.setLive(true);
-      if (!fishSystem.isRunning) fishSystem.toggle();
-      if (freezeButton) freezeButton.textContent = 'Freeze';
-    }
-  });
+  if (animation === 'frozen') {
+    if (statusText) statusText.textContent = 'TEMPORARILY FROZEN';
+    if (statusDot) statusDot.style.background = '#1976d2';
+    overlay.classList.add('frozen');
+    bubbleSystem.freeze();
+    bubbleSystem.setThawing(false);
+    bottomBubbleSystem.stop();
+    fishSystem.setLive(false);
+    if (fishSystem.isRunning) fishSystem.toggle();
+    return;
+  }
+
+  if (animation === 'frigid') {
+    if (statusText) statusText.textContent = 'STREAM COMPLETELY FROZEN';
+    if (statusDot) statusDot.style.background = '#b9efff';
+    overlay.classList.add('frigid');
+    bubbleSystem.freeze();
+    bubbleSystem.setThawing(false);
+    bottomBubbleSystem.stop();
+    fishSystem.setLive(false);
+    if (fishSystem.isRunning) fishSystem.toggle();
+    return;
+  }
+
+  restoreStandardAquarium();
 }
+
+function executeOverlayControl(control = {}) {
+    const animation = control.animation || 'standard';
+    const hasMatchingState = animation !== 'standard' && overlay.classList.contains(animation);
+    if ((control.animationToggle === true || control.animationToggle === 'true') && hasMatchingState) {
+      restoreStandardAquarium();
+      return;
+    }
+    const isActiveCard = (control.cardToggle === true || control.cardToggle === 'true')
+      && activeCardPage === control.card;
+    if (isActiveCard) {
+      restoreStandardAquarium();
+      return;
+    }
+    if (!control.card) hideTriggeredCard();
+    applyAnimation(animation);
+    if (control.card) showTriggeredCard(control.card, control.cardDuration);
+}
+
+for (const button of document.querySelectorAll('[data-animation]')) {
+  button.addEventListener('click', () => executeOverlayControl({
+    animation: button.dataset.animation,
+    animationToggle: button.dataset.animationToggle,
+    card: button.dataset.card,
+    cardDuration: button.dataset.cardDuration,
+    cardToggle: button.dataset.cardToggle,
+  }));
+}
+
+function receiveOverlayControl(event) {
+  if (!event || event.type !== 'gelid-overlay-control' || !event.id || event.id === lastControlEventId) return;
+  lastControlEventId = event.id;
+  executeOverlayControl(event.control);
+}
+
+function receiveStoredOverlayControl() {
+  try { receiveOverlayControl(JSON.parse(localStorage.getItem(controlEventStorageKey))); } catch (_) { /* Ignore absent or malformed control events. */ }
+}
+
+controlEventChannel && (controlEventChannel.onmessage = ({ data }) => receiveOverlayControl(data));
+window.addEventListener('storage', (event) => { if (event.key === controlEventStorageKey && event.newValue) receiveStoredOverlayControl(); });
+window.GelidOverlayRelay?.subscribe((event) => receiveOverlayControl(event));
 
 motionButton?.addEventListener('click', () => {
   overlay.classList.toggle('reduced-motion');
@@ -502,22 +595,17 @@ motionButton?.addEventListener('click', () => {
   fishSystem.toggle();
 });
 
-freezeButton?.addEventListener('click', () => {
-  overlay.classList.toggle('frozen');
-  if (overlay.classList.contains('frozen')) {
-    bubbleSystem.freeze();
-    if (fishSystem.isRunning) fishSystem.toggle();
-    freezeButton.textContent = 'Thaw';
-  } else {
-    bubbleSystem.unfreeze();
-    if (!fishSystem.isRunning) fishSystem.toggle();
-    freezeButton.textContent = 'Freeze';
-  }
-});
-
 const params = new URLSearchParams(window.location.search);
 const requestedStatus = params.get('status');
 const requestedGame = params.get('game');
+
+if (params.get('video') === 'underlay') {
+  overlay.classList.add('video-underlay');
+}
+
+if (params.get('preview') === 'grid') {
+  overlay.classList.add('preview-underlay');
+}
 
 if (requestedGame) {
   const gameElement = document.getElementById('current-game');
@@ -543,3 +631,24 @@ if (params.get('freeze') === 'on') {
   bubbleSystem.freeze();
   if (freezeButton) freezeButton.textContent = 'Thaw';
 }
+
+window.gelidUnderlayDiagnostics = () => {
+  const frame = document.querySelector('.gameplay-frame');
+  const frameRect = frame?.getBoundingClientRect();
+  const decorativeLayers = document.querySelectorAll('.coral, .seaweed, .octopus, .crab, .glacier, .ice-formation, .ice-crack, .frost-overlay, .fish-container');
+  return {
+    videoUnderlay: overlay.classList.contains('video-underlay'),
+    animationState: ['thawing', 'frozen', 'frigid'].find((state) => overlay.classList.contains(state)) || 'standard',
+    frame: frameRect && {
+      left: frameRect.left,
+      top: frameRect.top,
+      width: frameRect.width,
+      height: frameRect.height,
+      ratio: Number((frameRect.width / frameRect.height).toFixed(4)),
+      transparentBackground: getComputedStyle(frame).backgroundColor === 'rgba(0, 0, 0, 0)',
+    },
+    cardPublisher: { activePage: activeCardPage, lastActivation: lastCardActivation },
+    decorativeLayersHidden: [...decorativeLayers].every((layer) => Number(getComputedStyle(layer).opacity) === 0),
+    particles: { baseBubbles: bubbleSystem.bubbles.length, thawingBubbleTarget: bubbleSystem.thawingMaxBubbles, bottomBubbles: bottomBubbleSystem.bubbles.length },
+  };
+};

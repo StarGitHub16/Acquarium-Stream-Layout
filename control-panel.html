@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gelid Genteel — Overlay Controls</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="control-panel.css" />
+  </head>
+  <body>
+    <main class="control-panel" aria-labelledby="control-title">
+      <header class="control-panel__header">
+        <p class="control-panel__eyebrow">THE GELID GENTEEL</p>
+        <h1 id="control-title">Overlay Control Room</h1>
+        <p class="control-panel__hint">Use this page from any phone connected to the same Wi‑Fi as the stream PC.</p>
+      </header>
+
+      <section class="control-panel__section" aria-labelledby="animation-title">
+        <div class="control-panel__section-head">
+          <p id="animation-title">WATER STATE</p>
+          <span id="control-status" role="status">Normal</span>
+        </div>
+        <div class="control-grid control-grid--four">
+          <button class="control-button is-active" data-overlay-control data-animation="standard">Normal</button>
+          <button class="control-button" data-overlay-control data-animation="thawing" data-animation-toggle="true">Bubbles</button>
+          <button class="control-button" data-overlay-control data-animation="frozen" data-animation-toggle="true">Freeze</button>
+          <button class="control-button" data-overlay-control data-animation="frigid" data-animation-toggle="true">Deep Freeze</button>
+        </div>
+      </section>
+
+      <section class="control-panel__section" aria-labelledby="card-title">
+        <div class="control-panel__section-head">
+          <p id="card-title">CARD + WATER STATE</p>
+          <span>Second press hides</span>
+        </div>
+        <div class="control-grid control-grid--three">
+          <button class="control-button control-button--card" data-overlay-control data-card="card-thawing.html" data-animation="thawing" data-card-duration="manual" data-card-toggle="true">Thawing Card</button>
+          <button class="control-button control-button--card" data-overlay-control data-card="card-frozen.html" data-animation="frozen" data-card-duration="manual" data-card-toggle="true">Frozen Card</button>
+          <button class="control-button control-button--card" data-overlay-control data-card="card-offline.html" data-animation="frigid" data-card-duration="manual" data-card-toggle="true">Offline Card</button>
+        </div>
+      </section>
+
+      <footer class="control-panel__footer">This local controller sends events to the water and card Browser Sources running in XSplit.</footer>
+    </main>
+    <script src="overlay-relay.js"></script>
+    <script src="control-panel.js"></script>
+  </body>
+</html>

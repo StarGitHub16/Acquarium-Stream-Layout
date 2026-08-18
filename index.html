@@ -111,21 +111,7 @@
         <div class="corner corner-br"></div>
         <div class="corner corner-bl"></div>
         <div class="inner-rim"></div>
-        
-        <!-- Center screen state messages -->
-        <div class="center-message brb-message" aria-hidden="true">
-          <div class="ice-block">
-            <div class="frost-icon">❄️</div>
-            <h2>FROZEN</h2>
-            <p>TEMPORARILY FROZEN</p>
-            <div class="crystal-decoration"></div>
-          </div>
-        </div>
-        
-        <div class="center-message starting-message" aria-hidden="true">
-          
-        </div>
-        
+        <!-- Center-card content lives in card-source.html, a separate transparent OBS Browser Source. -->
         <div class="center-message offline-message" aria-hidden="true">
           <!-- <div class="frigid-block">
             <div class="iceberg-icon">🏔️</div>
@@ -207,15 +193,8 @@
       <div class="ice-crack crack-3" aria-hidden="true"></div>
       <div class="frost-overlay" aria-hidden="true"></div>
 
-      <nav class="demo-controls" aria-label="Overlay preview controls">
-        <button data-status="LIVE FROM THE TANK">Standard</button>
-        <button data-status="THE AQUARIUM OPENS SOON">Bubbles</button>
-        <!-- <button data-status="TEMPORARILY FROZEN">Freeze</button> -->
-        <button id="toggleFreeze">Freeze</button>
-        <button data-status="STREAM COMPLETELY FROZEN">Frozen</button>
-        <!-- <button id="toggleMotion">Motion</button> -->
-      </nav>
     </main>
+    <script src="overlay-relay.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
