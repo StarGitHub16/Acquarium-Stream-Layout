@@ -94,12 +94,20 @@
     console.log('[Card] Control data:', control);
     // Only show this card if the control specifically targets this card page
     // Hide for all other cases (different card or no card)
-    const shouldShow = control.card === pageName;
-    receiveLiveEvent({
-      id: event.id,
-      action: shouldShow ? 'show' : 'hide',
-      page: shouldShow ? pageName : null,
-    });
+    if (control.card === pageName) {
+      receiveLiveEvent({
+        id: event.id,
+        action: 'show',
+        page: pageName,
+      });
+    } else {
+      // Hide this card for any other control
+      receiveLiveEvent({
+        id: event.id,
+        action: 'hide',
+        page: null,
+      });
+    }
   }
 
   function readNewStoredControllerEvent() {
