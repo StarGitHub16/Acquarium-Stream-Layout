@@ -1,9 +1,14 @@
 (() => {
+  console.log('[Card] Script initialized');
   const card = document.querySelector('.card-page');
   const title = document.querySelector('[data-card-title]');
   const subtitle = document.querySelector('[data-card-subtitle]');
   const editHelp = document.querySelector('.card-edit-help');
-  if (!card || !title || !subtitle) return;
+  console.log('[Card] Elements found:', { card, title, subtitle, editHelp });
+  if (!card || !title || !subtitle) {
+    console.log('[Card] Missing required elements, script exiting');
+    return;
+  }
 
   const copyKey = `gelid-genteel-card-copy-${card.dataset.cardKey}`;
   const eventKey = 'gelid-genteel-card-event';
@@ -49,7 +54,11 @@
   }
 
   function setLiveVisible(visible) {
+    console.log('[Card] setLiveVisible called with:', visible);
+    console.log('[Card] Card element:', card);
+    console.log('[Card] Card classes before:', card.className);
     card.classList.toggle('is-live-active', visible);
+    console.log('[Card] Card classes after:', card.className);
     if (visible) playSheen();
     else card.classList.remove('is-sheen-active');
   }
@@ -175,8 +184,14 @@
   // A direct live card URL always begins blank. Do NOT read stored event IDs
   // on page load, so new events are always processed.
   document.body.classList.add('card-live');
+  console.log('[Card] Event listeners being set up');
+  console.log('[Card] Channel:', channel);
+  console.log('[Card] Control channel:', controlChannel);
   channel && (channel.onmessage = ({ data }) => receiveLiveEvent(data));
   window.addEventListener('storage', (event) => { if (event.key === eventKey && event.newValue) readNewStoredEvent(); });
   controlChannel && (controlChannel.onmessage = ({ data }) => receiveControllerEvent(data));
   window.addEventListener('storage', (event) => { if (event.key === controlEventKey && event.newValue) readNewStoredControllerEvent(); });
+  console.log('[Card] Event listeners set up complete');
+  console.log('[Card] Initial card classes:', card.className);
+  console.log('[Card] Initial body classes:', document.body.className);
 })();
