@@ -51,9 +51,7 @@ body { color: var(--bioluminescent); font-family: Inter, sans-serif; }
 .overlay.video-underlay .ice-crack,
 .overlay.video-underlay .frost-overlay { opacity: 0 !important; }
 .overlay.video-underlay:not(.thawing):not(.frozen):not(.frigid) .bubble-container { opacity: 0; }
-.overlay.video-underlay .gameplay-frame,
-.overlay.video-underlay .card-iframe-host { background: transparent !important; }
-.overlay.video-underlay .demo-controls { display: none !important; }
+.overlay.video-underlay .gameplay-frame { background: transparent !important; }
 .overlay.video-underlay.preview-underlay {
   background-color: #172432;
   background-image: linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.08) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.08) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.08) 75%);
