@@ -5,7 +5,7 @@
   const buttons = [...document.querySelectorAll('[data-overlay-control]')];
   let activeButton = buttons.find((button) => button.dataset.animation === 'standard') || null;
 
-  function displayName(button) {
+  function displayName(button) {  
     return button.textContent.trim();
   }
 
