@@ -1,20 +1,20 @@
 (() => {
-  const defaultRelayUrl = 'https://arcticgame-qpnevoze.manus.space';
   const requestedRelayUrl = new URLSearchParams(window.location.search).get('relay');
-  const relayUrl = (requestedRelayUrl || defaultRelayUrl).replace(/\/+$/, '');
+  const relayUrl = (requestedRelayUrl || (location.protocol.startsWith('http') ? location.origin : '')).replace(/\/+$/, '');
   const pollIntervalMs = 650;
 
-  async function call(procedure, input) {
-    const response = await fetch(`${relayUrl}/api/trpc/${procedure}`, {
+  async function call(path, input) {
+    if (!relayUrl) throw new Error('Open this page through the local overlay relay, not directly as a file.');
+    const response = await fetch(`${relayUrl}${path}`, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ json: input }),
+      body: JSON.stringify(input),
     });
     const payload = await response.json().catch(() => null);
-    const message = payload?.error?.json?.message || payload?.error?.message || 'Unable to reach the secure overlay relay.';
-    if (!response.ok || !payload?.result?.data?.json) throw new Error(message);
-    return payload.result.data.json;
+    const message = payload?.error || 'Unable to reach the local overlay relay.';
+    if (!response.ok) throw new Error(message);
+    return payload;
   }
 
   function subscribe(onEvent, { onStatus } = {}) {
@@ -25,7 +25,9 @@
     async function poll() {
       if (stopped) return;
       try {
-        const { event } = await call('overlay.latestControl', null);
+        const response = await fetch(`${relayUrl}/api/overlay/latest`, { cache: 'no-store', mode: 'cors' });
+        const { event } = await response.json();
+        if (!response.ok) throw new Error('Unable to reach the local overlay relay.');
         onStatus?.({ connected: true });
         if (initialRead) {
           knownEventId = event?.id || null;
@@ -47,8 +49,8 @@
 
   window.GelidOverlayRelay = {
     relayUrl,
-    verifyControllerAccess: (accessCode) => call('overlay.verifyControllerAccess', { accessCode }),
-    publishControl: (accessCode, control) => call('overlay.publishControl', { accessCode, control }),
+    verifyControllerAccess: (accessCode) => call('/api/overlay/verify', { accessCode }),
+    publishControl: (accessCode, control) => call('/api/overlay/publish', { accessCode, control }),
     subscribe,
   };
 })();
