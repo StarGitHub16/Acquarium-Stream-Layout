@@ -88,9 +88,11 @@
     knownControlEventId = event.id;
     const control = event.control || {};
     console.log('[Card] Control data:', control);
+    // Hide this card if the control is for a different card or no card at all
+    const shouldShow = control.card === pageName;
     receiveLiveEvent({
       id: event.id,
-      action: control.card === pageName ? 'show' : 'hide',
+      action: shouldShow ? 'show' : 'hide',
       page: control.card || null,
     });
   }
