@@ -38,15 +38,6 @@
 
   channel && (channel.onmessage = ({ data }) => receive(data));
   window.addEventListener('storage', (event) => { if (event.key === storageKey && event.newValue) receiveStoredEvent(); });
-  window.GelidOverlayRelay?.subscribe((event) => {
-    const control = event?.control || {};
-    receive({
-      id: event.id,
-      action: control.card ? 'show' : 'hide',
-      page: control.card || null,
-      duration: control.cardDuration,
-    });
-  });
   // Deliberately do not replay the last stored event on load. The OBS card source
   // must always begin blank; only a new Card + Animation button press may reveal it.
 

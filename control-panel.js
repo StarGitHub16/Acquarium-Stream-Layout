@@ -9,21 +9,15 @@
     return button.textContent.trim();
   }
 
-  function publishLocal(event) {
-    try { localStorage.setItem(storageKey, JSON.stringify(event)); } catch (_) { /* BroadcastChannel remains available when storage is blocked. */ }
-    channel?.postMessage(event);
-  }
-
-  async function publish(control) {
-    if (!window.GelidOverlayRelay) throw new Error('Local relay is unavailable.');
-    const localEvent = {
+  function publish(control) {
+    const event = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       type: 'gelid-overlay-control',
       control,
       createdAt: Date.now(),
     };
-    const response = await window.GelidOverlayRelay.publishControl(control);
-    publishLocal(response.event || localEvent);
+    try { localStorage.setItem(storageKey, JSON.stringify(event)); } catch (_) { /* BroadcastChannel remains available when storage is blocked. */ }
+    channel?.postMessage(event);
   }
 
   function setActive(button) {
@@ -33,7 +27,7 @@
   }
 
   buttons.forEach((button) => {
-    button.addEventListener('click', async () => {
+    button.addEventListener('click', () => {
       const isSecondPress = activeButton === button && (button.dataset.cardToggle === 'true' || button.dataset.animationToggle === 'true');
       const control = isSecondPress
         ? { animation: 'standard' }
@@ -44,16 +38,8 @@
             cardDuration: button.dataset.cardDuration || 'manual',
             cardToggle: button.dataset.cardToggle === 'true',
           };
-      button.disabled = true;
-      if (status) status.textContent = 'Sending…';
-      try {
-        await publish(control);
-        setActive(isSecondPress ? buttons.find((item) => item.dataset.animation === 'standard') : button);
-      } catch (_) {
-        if (status) status.textContent = 'Relay unavailable — no change sent';
-      } finally {
-        button.disabled = false;
-      }
+      publish(control);
+      setActive(isSecondPress ? buttons.find((item) => item.dataset.animation === 'standard') : button);
     });
   });
 })();

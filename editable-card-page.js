@@ -122,12 +122,4 @@
   try { knownEventId = JSON.parse(localStorage.getItem(eventKey))?.id || null; } catch (_) { /* Keep a blank live page. */ }
   channel && (channel.onmessage = ({ data }) => receiveLiveEvent(data));
   window.addEventListener('storage', (event) => { if (event.key === eventKey && event.newValue) readNewStoredEvent(); });
-  window.GelidOverlayRelay?.subscribe((event) => {
-    const control = event?.control || {};
-    receiveLiveEvent({
-      id: event.id,
-      action: control.card === pageName ? 'show' : 'hide',
-      page: control.card || null,
-    });
-  });
 })();

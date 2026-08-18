@@ -586,7 +586,6 @@ function receiveStoredOverlayControl() {
 
 controlEventChannel && (controlEventChannel.onmessage = ({ data }) => receiveOverlayControl(data));
 window.addEventListener('storage', (event) => { if (event.key === controlEventStorageKey && event.newValue) receiveStoredOverlayControl(); });
-window.GelidOverlayRelay?.subscribe((event) => receiveOverlayControl(event));
 
 motionButton?.addEventListener('click', () => {
   overlay.classList.toggle('reduced-motion');
